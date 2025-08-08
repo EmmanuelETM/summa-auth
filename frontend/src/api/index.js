@@ -1,0 +1,53 @@
+const API_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+const API = {
+  config: {
+    url: API_URL,
+    key: API_KEY,
+    app: "",
+  },
+
+  setConfig(params) {
+    this.config = { ...this.config, ...params };
+  },
+
+  async fetch(endpoint, method = "GET", body = null) {
+    let error, data;
+
+    try {
+      const response = await fetch(this.config.url + endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          ...(this.config.key && {
+            Authorization: `Bearer ${this.config.key}`,
+          }),
+        },
+        body: body ? JSON.stringify(body) : null,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unknown error occurred");
+      }
+
+      data = result;
+    } catch (e) {
+      error = e.message;
+    }
+
+    return [error, data];
+  },
+
+  get(endpoint) {
+    return this.fetch(endpoint);
+  },
+
+  post(endpoint, body) {
+    return this.fetch(endpoint, "POST", body);
+  },
+};
+
+export default API;
