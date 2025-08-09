@@ -3,12 +3,13 @@ import { useForm } from "react-hook-form";
 import useEnterNavigation from "../../hooks/use-enter-navigation.jsx";
 import { useApp } from "../../hooks/use-app.jsx";
 import { useAuth } from "../../hooks/use-auth.jsx";
-import { useNavigate } from "react-router";
+import { useNavigate, Link, useSearchParams } from "react-router";
 import { useState } from "react";
 
 function LoginForm() {
   const { info, loading } = useApp();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [loginError, setLoginError] = useState(null);
 
@@ -36,7 +37,7 @@ function LoginForm() {
       navigate("/dashboard");
     } else {
       const url = `${info.url}?token=${response.token}`;
-      window.location.replace(url);
+      window.open(url, "_top");
     }
   };
 
@@ -47,7 +48,6 @@ function LoginForm() {
       className="w-full max-w-md bg-white p-8 rounded-xl shadow-md"
     >
       <div className="flex flex-col items-center">
-        <img src="./summasoft.svg" alt="Logo SummaSoft" className="w-48 mb-4" />
         {loading ? (
           <div className="flex flex-col items-center animate-pulse my-4">
             <div className="w-24 h-24 rounded-full bg-gray-300 mb-4" />
@@ -100,13 +100,18 @@ function LoginForm() {
           aria-invalid={errors.password ? "true" : "false"}
         />
 
-        <button
-          type="button"
-          onClick={() => navigate("/update-password")}
-          className="text-blue-600 font-semibold hover:underline cursor-pointer mt-2"
-        >
-          Se le olvidó la Contraseña?
-        </button>
+        <div className="mt-2">
+          <Link
+            className="text-blue-600 font-semibold hover:underline"
+            to={
+              searchParams.size > 0
+                ? `/update-password/?${searchParams}`
+                : "/update-password"
+            }
+          >
+            Se le olvidó la Contraseña?
+          </Link>
+        </div>
         {errors.password && (
           <p className="text-red-600 text-xs mt-1">
             {Errores["Missing password"]}
@@ -120,14 +125,15 @@ function LoginForm() {
       >
         Iniciar Sesión
       </button>
-      <div className="text-center w-full">
-        <button
-          type="button"
-          onClick={() => navigate("/register")}
-          className="text-blue-600 hover:underline font-semibold cursor-pointer p-1 mt-2 "
+      <div className="text-center w-full mt-2">
+        <Link
+          className="text-blue-600 font-semibold hover:underline"
+          to={
+            searchParams.size > 0 ? `/register/?${searchParams}` : "/register"
+          }
         >
           Registrarse
-        </button>
+        </Link>
       </div>
     </form>
   );

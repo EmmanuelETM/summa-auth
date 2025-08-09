@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { AuthContext } from "./AuthContext";
 import authApi from "../../api/auth.js";
 
@@ -8,12 +9,41 @@ export const AuthProvider = ({ children }) => {
     token: "",
     user: null,
   });
+  const [loading, setLoading] = useState(false);
+  const { search } = useLocation();
+  const navigate = useNavigate();
+  const isAuthApp = search !== "" ? false : true;
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setAuth({ authenticated: false, token: "", user: null });
-    window.location.href = "http://localhost:5173";
-  }, []);
+    navigate("/");
+  }, [navigate]);
+
+  const verify = useCallback(async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return false;
+    }
+
+    const [error, data] = await authApi.verify(token);
+    if (error || !data) {
+      logout();
+      setLoading(false);
+      return false;
+    }
+
+    setAuth({
+      authenticated: true,
+      token,
+      user: authApi.user,
+    });
+
+    setLoading(false);
+    return true;
+  }, [logout]);
 
   const handleAuth = useCallback(
     ({ token = "" } = {}) => {
@@ -47,34 +77,18 @@ export const AuthProvider = ({ children }) => {
       return [error || "Invalid login", null];
     }
 
-    handleAuth({ token: data.token });
+    if (isAuthApp) {
+      handleAuth({ token: data.token });
+    }
     return [null, data];
   };
 
-  const verify = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
-
-    const [error, data] = await authApi.verify(token);
-    if (error || !data) {
-      logout();
-      return false;
-    }
-
-    setAuth({
-      authenticated: true,
-      token,
-      user: authApi.user,
-    });
-
-    return true;
-  }, [logout]);
-
+  // console.log(auth);
   useEffect(() => {
     verify();
   }, [verify]);
 
-  const value = { auth, login, logout };
+  const value = { auth, login, logout, loading };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

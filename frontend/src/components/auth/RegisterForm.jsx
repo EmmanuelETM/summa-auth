@@ -2,7 +2,7 @@ import { Errores } from "../../lib/errores.js";
 import { useForm } from "react-hook-form";
 import useEnterNavigation from "../../hooks/use-enter-navigation.jsx";
 import { useApp } from "../../hooks/use-app.jsx";
-import { useNavigate } from "react-router";
+import { useNavigate, Link, useSearchParams } from "react-router";
 import { useAuth } from "../../hooks/use-auth.jsx";
 import { useState } from "react";
 
@@ -10,6 +10,7 @@ function RegisterForm() {
   const { info, loading } = useApp();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loginError, setLoginError] = useState(null);
 
   const {
@@ -47,7 +48,6 @@ function RegisterForm() {
       className="w-full max-w-md bg-white p-8 rounded-xl shadow-md"
     >
       <div className="flex flex-col items-center">
-        <img src="./summasoft.svg" alt="Logo SummaSoft" className="w-48 mb-4" />
         {loading ? (
           <div className="flex flex-col items-center animate-pulse my-4">
             <div className="w-24 h-24 rounded-full bg-gray-300 mb-4" />
@@ -131,14 +131,13 @@ function RegisterForm() {
       >
         Registrarse
       </button>
-      <div className="text-center w-full">
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          className="text-blue-600 font-semibold hover:underline cursor-pointer p-1 mt-2"
+      <div className="text-center w-full mt-2">
+        <Link
+          className="text-blue-600 font-semibold hover:underline"
+          to={searchParams.size > 0 ? `/?${searchParams}` : "/"}
         >
           Iniciar Sesión
-        </button>
+        </Link>
       </div>
     </form>
   );
