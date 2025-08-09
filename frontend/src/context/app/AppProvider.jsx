@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AppContext } from "./AppContext";
+import { AppContext } from "./AppContext.jsx";
 import { defaultApp } from "../../lib/defaultApp.js";
 import App from "../../api/app.js";
 

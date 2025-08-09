@@ -7,8 +7,22 @@ const auth = {
     api.setConfig(params); // Use the new method from api.js
   },
 
-  async login(username, password) {
-    const [error, data] = await api.post("/auth/login", { username, password });
+  async login({ username, password, app }) {
+    const [error, data] = await api.post("/auth/login", {
+      username,
+      password,
+      app,
+    });
+
+    return [error, data];
+  },
+
+  async register({ username, email, password }) {
+    const [error, data] = await api.post("/auth/register", {
+      username,
+      email,
+      password,
+    });
     return [error, data];
   },
 
@@ -21,8 +35,8 @@ const auth = {
   async verify(token) {
     const [error, data] = await api.post("/auth/verify", { token });
 
-    this.user = data.token;
-    return [error, true];
+    this.token = data.token;
+    return [error, data];
   },
 };
 

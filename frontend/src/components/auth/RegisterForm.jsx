@@ -1,43 +1,52 @@
-import { Errores } from "../../lib/errores.js";
 import { useForm } from "react-hook-form";
-import useEnterNavigation from "../../hooks/use-enter-navigation.jsx";
-import { useApp } from "../../hooks/use-app.jsx";
-import { useNavigate, Link, useSearchParams } from "react-router";
-import { useAuth } from "../../hooks/use-auth.jsx";
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router";
+import { useApp } from "../../hooks/use-app.jsx";
+import { register } from "../../context/auth/authActions.js";
+import { Errores, ErrorMapper } from "../../lib/errores.js";
+import { Message } from "../Message.jsx";
 
 function RegisterForm() {
   const { info, loading } = useApp();
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [loginError, setLoginError] = useState(null);
+  const [registerError, setRegisterError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const {
-    register,
+    register: formRegister,
     handleSubmit,
     formState: { errors },
+    watch,
     reset,
   } = useForm();
 
-  useEnterNavigation("#Form");
+  const password = watch("password");
 
   const onSubmit = async (data) => {
-    setLoginError(null); // clear previous errors
-    const { username, password } = data;
-    const [error, response] = await login({ username, password });
+    setSubmitting(true);
+    setRegisterError(null);
+
+    const { username, email, password, confirm } = data;
+
+    if (password !== confirm) {
+      setRegisterError("Las contraseñas no coinciden.");
+      setSubmitting(false);
+      return;
+    }
+
+    const [error, response] = await register({ username, password, email });
+    setSubmitting(false);
 
     if (error) {
-      setLoginError("Credenciales incorrectas. Inténtalo nuevamente.");
+      setRegisterError(ErrorMapper(error));
       reset(undefined, { keepErrors: true });
       return;
     }
 
-    if (info.url === "/") {
-      navigate("/users");
-    } else {
-      const url = `${info.url}?token=${response.token}`;
-      window.location.replace(url);
+    if (response.status === "ok") {
+      console.log(response);
+      setSuccess(true);
     }
   };
 
@@ -63,12 +72,16 @@ function RegisterForm() {
         )}
       </div>
 
-      {loginError && (
-        <p className="text-red-600 text-sm mb-4 text-center">{loginError}</p>
+      {registerError && (
+        <p className="text-red-600 text-sm mb-4 text-center">{registerError}</p>
       )}
 
       <div className="mb-4">
+        <label htmlFor="username" className="sr-only">
+          Nombre de Usuario
+        </label>
         <input
+          id="username"
           type="text"
           placeholder="Nombre de Usuario"
           autoFocus
@@ -77,18 +90,45 @@ function RegisterForm() {
               ? "border-red-500 focus:ring-red-300"
               : "border-gray-300 focus:ring-blue-300"
           }`}
-          {...register("username", { required: true })}
+          {...formRegister("username", {
+            required: Errores["Missing username"],
+          })}
           aria-invalid={errors.username ? "true" : "false"}
         />
         {errors.username && (
-          <p className="text-red-600 text-xs mt-1">
-            {Errores["Missing username"]}
-          </p>
+          <p className="text-red-600 text-xs mt-1">{errors.username.message}</p>
         )}
       </div>
 
       <div className="mb-4">
+        <label htmlFor="email" className="sr-only">
+          Correo
+        </label>
         <input
+          id="email"
+          type="email"
+          placeholder="Correo"
+          className={`w-full px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
+            errors.email
+              ? "border-red-500 focus:ring-red-300"
+              : "border-gray-300 focus:ring-blue-300"
+          }`}
+          {...formRegister("email", {
+            required: Errores["Missing email"],
+          })}
+          aria-invalid={errors.email ? "true" : "false"}
+        />
+        {errors.email && (
+          <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="password" className="sr-only">
+          Contraseña
+        </label>
+        <input
+          id="password"
           type="password"
           placeholder="Contraseña"
           className={`w-full px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
@@ -96,41 +136,57 @@ function RegisterForm() {
               ? "border-red-500 focus:ring-red-300"
               : "border-gray-300 focus:ring-blue-300"
           }`}
-          {...register("password", { required: true })}
+          {...formRegister("password", {
+            required: Errores["Missing password"],
+          })}
           aria-invalid={errors.password ? "true" : "false"}
         />
         {errors.password && (
-          <p className="text-red-600 text-xs mt-1">
-            {Errores["Missing password"]}
-          </p>
+          <p className="text-red-600 text-xs mt-1">{errors.password.message}</p>
         )}
       </div>
 
       <div className="mb-6">
+        <label htmlFor="confirm" className="sr-only">
+          Confirmar Contraseña
+        </label>
         <input
+          id="confirm"
           type="password"
-          placeholder="Contraseña"
+          placeholder="Confirmar Contraseña"
           className={`w-full px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
-            errors.password
+            errors.confirm
               ? "border-red-500 focus:ring-red-300"
               : "border-gray-300 focus:ring-blue-300"
           }`}
-          {...register("confirm-password", { required: true })}
-          aria-invalid={errors.password ? "true" : "false"}
+          {...formRegister("confirm", {
+            required: Errores["Missing confirm"],
+            validate: (value) =>
+              value === password || "Las contraseñas no coinciden.",
+          })}
+          aria-invalid={errors.confirm ? "true" : "false"}
         />
-        {errors.password && (
-          <p className="text-red-600 text-xs mt-1">
-            {Errores["Missing password"]}
-          </p>
+        {errors.confirm && (
+          <p className="text-red-600 text-xs mt-1">{errors.confirm.message}</p>
         )}
       </div>
 
+      {success && (
+        <Message type="success" message="Usuario creado exitosamente" />
+      )}
+
       <button
         type="submit"
-        className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 cursor-pointer transition-colors duration-200"
+        disabled={submitting}
+        className={`w-full py-2 font-semibold text-white rounded-md transition-colors duration-200 ${
+          submitting
+            ? "bg-blue-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
       >
-        Registrarse
+        {submitting ? "Registrando..." : "Registrarse"}
       </button>
+
       <div className="text-center w-full mt-2">
         <Link
           className="text-blue-600 font-semibold hover:underline"

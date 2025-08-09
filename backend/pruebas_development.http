@@ -4,9 +4,9 @@ content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJhcHAiOiJhdXRoIn0.Mnmp9WQptM2xP4yDOESK1bykmJfNWz4far501MAsFS4
 
 {
-    "username": "ambar",
-    "password": "123456",
-    "email": "ambar@gmail.com"
+    "username": "saul",
+    "password": "1234",
+    "email": "saul@gmail.com"
 }
 
 ### INICIAR SESION OK
@@ -76,13 +76,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZ
 ### endpoint in app
 POST http://localhost:4000/api/apps HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJzdWIiOiJzb3BvcnRlIiwiYXBwIjoiYXBpIn0._8PaVQPzqIxm6XHGmgE7lIThpCYHpzq2Bw4dkfr-4yY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJhcHAiOiJhdXRoIn0.Mnmp9WQptM2xP4yDOESK1bykmJfNWz4far501MAsFS4
 
 {
-    "name": "android 14",
-    "alias": "android",
-    "url": "https://summasoft.do/csc/",
-    "icon": "https://i.pinimg.com/736x/ab/d3/fd/abd3fdbf74f54dc52461687b9581b397.jpg"
+    "name": "auth",
+    "alias": "auth",
+    "url": "https://summasoft.do/auth/",
+    "icon": "http://localhost:5173/login.svg"
 }
 
 ### VERIFICAR UN TOKEN 

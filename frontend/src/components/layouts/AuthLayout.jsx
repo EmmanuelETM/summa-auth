@@ -18,7 +18,7 @@ export function AuthLayout() {
   }
 
   return (
-    <div className="min-h-screen relative bg-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative bg-gray-100 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 left-4">
         <img src="/summasoft.svg" alt="Logo SummaSoft" className="w-48" />
       </div>

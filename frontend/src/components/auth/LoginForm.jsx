@@ -1,10 +1,10 @@
-import { Errores } from "../../lib/errores.js";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router";
 import useEnterNavigation from "../../hooks/use-enter-navigation.jsx";
 import { useApp } from "../../hooks/use-app.jsx";
 import { useAuth } from "../../hooks/use-auth.jsx";
-import { useNavigate, Link, useSearchParams } from "react-router";
-import { useState } from "react";
+import { Errores, ErrorMapper } from "../../lib/errores.js";
 
 function LoginForm() {
   const { info, loading } = useApp();
@@ -12,6 +12,7 @@ function LoginForm() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [loginError, setLoginError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     register,
@@ -23,12 +24,19 @@ function LoginForm() {
   useEnterNavigation("#Form");
 
   const onSubmit = async (data) => {
-    setLoginError(null); // clear previous errors
+    setSubmitting(true);
+    setLoginError(null);
     const { username, password } = data;
-    const [error, response] = await login({ username, password });
+
+    const [error, response] = await login({
+      username,
+      password,
+      app: info.alias,
+    });
+    setSubmitting(false);
 
     if (error) {
-      setLoginError("Credenciales incorrectas. Inténtalo nuevamente.");
+      setLoginError(ErrorMapper(error));
       reset(undefined, { keepErrors: true });
       return;
     }
@@ -68,7 +76,11 @@ function LoginForm() {
       )}
 
       <div className="mb-4">
+        <label htmlFor="username" className="sr-only">
+          Nombre de Usuario
+        </label>
         <input
+          id="username"
           type="text"
           placeholder="Nombre de Usuario"
           autoFocus
@@ -77,18 +89,22 @@ function LoginForm() {
               ? "border-red-500 focus:ring-red-300"
               : "border-gray-300 focus:ring-blue-300"
           }`}
-          {...register("username", { required: true })}
+          {...register("username", {
+            required: Errores["Missing username"],
+          })}
           aria-invalid={errors.username ? "true" : "false"}
         />
         {errors.username && (
-          <p className="text-red-600 text-xs mt-1">
-            {Errores["Missing username"]}
-          </p>
+          <p className="text-red-600 text-xs mt-1">{errors.username.message}</p>
         )}
       </div>
 
       <div className="mb-6">
+        <label htmlFor="password" className="sr-only">
+          Contraseña
+        </label>
         <input
+          id="password"
           type="password"
           placeholder="Contraseña"
           className={`w-full px-4 py-2 rounded-md border text-sm focus:outline-none focus:ring-2 ${
@@ -96,9 +112,14 @@ function LoginForm() {
               ? "border-red-500 focus:ring-red-300"
               : "border-gray-300 focus:ring-blue-300"
           }`}
-          {...register("password", { required: true })}
+          {...register("password", {
+            required: Errores["Missing password"],
+          })}
           aria-invalid={errors.password ? "true" : "false"}
         />
+        {errors.password && (
+          <p className="text-red-600 text-xs mt-1">{errors.password.message}</p>
+        )}
 
         <div className="mt-2">
           <Link
@@ -109,22 +130,23 @@ function LoginForm() {
                 : "/update-password"
             }
           >
-            Se le olvidó la Contraseña?
+            ¿Se te olvidó la contraseña?
           </Link>
         </div>
-        {errors.password && (
-          <p className="text-red-600 text-xs mt-1">
-            {Errores["Missing password"]}
-          </p>
-        )}
       </div>
 
       <button
         type="submit"
-        className="w-full py-2 bg-blue-600 font-semibold text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors duration-200"
+        disabled={submitting}
+        className={`w-full py-2 font-semibold text-white rounded-md transition-colors duration-200 ${
+          submitting
+            ? "bg-blue-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
       >
-        Iniciar Sesión
+        {submitting ? "Iniciando..." : "Iniciar Sesión"}
       </button>
+
       <div className="text-center w-full mt-2">
         <Link
           className="text-blue-600 font-semibold hover:underline"

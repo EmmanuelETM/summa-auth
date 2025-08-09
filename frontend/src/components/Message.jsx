@@ -4,9 +4,10 @@ const bgColors = {
   error: "bg-red-100 text-red-800 border-red-300",
   warning: "bg-yellow-200 text-yellow-800 border-yellow-300",
   info: "bg-blue-100 text-blue-800 border-blue-300",
+  success: "bg-green-100 text-green-600 border-green-300",
 };
 
-export function ErrorMessage({
+export function Message({
   message = "Ocurrió un error inesperado.",
   type = "error",
   icon = <AlertCircle className="w-6 h-6 mr-2" />,

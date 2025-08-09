@@ -15,7 +15,6 @@ const bearer = () => async (req, res, next) => {
   }
   // Extraer el token
   const token = bearer.split(" ")[1];
-  console.log(token);
 
   // Si no tiene el bearer...
 

@@ -58,8 +58,8 @@ auth.register = async (req, res) => {
 };
 
 auth.login = async (req, res) => {
-  const { username, password } = req.body;
-
+  const { username, password, app } = req.body;
+  console.log(app);
   try {
     // Buscar el usuario
     const user = await userModel.getOne({ username });
@@ -90,7 +90,7 @@ auth.login = async (req, res) => {
     }
 
     // Firmar un nuevo token
-    const token = jwt.sign({ username: user.username }, config.SECRET_KEY);
+    const token = jwt.sign({ username: user.username, app }, config.SECRET_KEY);
 
     // Enviar la respuesta
     return res.status(200).json({
