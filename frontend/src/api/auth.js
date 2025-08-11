@@ -26,6 +26,13 @@ const auth = {
     return [error, data];
   },
 
+  async updatePassword({ username, password }) {
+    const [error, data] = await api.patch(`/users/${username}/password`, {
+      password,
+    });
+    return [error, data];
+  },
+
   async portal() {
     const [error, data] = await api.get("/auth/portal");
 

@@ -59,7 +59,7 @@ auth.register = async (req, res) => {
 
 auth.login = async (req, res) => {
   const { username, password, app } = req.body;
-  console.log(app);
+
   try {
     // Buscar el usuario
     const user = await userModel.getOne({ username });
@@ -199,6 +199,15 @@ auth.update = async (req, res) => {
 auth.updatePassword = async (req, res) => {
   const currentusername = req.params.username;
 
+  const exists = await userModel.getOne({
+    username: currentusername,
+    email: "",
+  });
+
+  if (!exists) {
+    return res.status(400).json({ message: "User not found" });
+  }
+
   const { password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -207,7 +216,7 @@ auth.updatePassword = async (req, res) => {
     data: { password: hashedPassword },
   });
 
-  return res.status(500).json({
+  return res.status(200).json({
     status: "ok",
     message: "Password updated successfully.",
   });

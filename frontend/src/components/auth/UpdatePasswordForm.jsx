@@ -1,16 +1,16 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useApp } from "../../hooks/use-app.jsx";
-import { useAuth } from "../../hooks/use-auth.jsx";
 import { Errores, ErrorMapper } from "../../lib/errores.js";
+import { updatePassword } from "../../context/auth/authActions.js";
+import { Message } from "../Message.jsx";
 
 function UpdatePasswordForm() {
   const { info, loading } = useApp();
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [formError, setFormError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -35,7 +35,7 @@ function UpdatePasswordForm() {
       return;
     }
 
-    const [error, response] = await login({ username, password });
+    const [error, response] = await updatePassword({ username, password });
     setSubmitting(false);
 
     if (error) {
@@ -44,11 +44,8 @@ function UpdatePasswordForm() {
       return;
     }
 
-    if (info.url === "/") {
-      navigate("/users");
-    } else {
-      const url = `${info.url}?token=${response.token}`;
-      window.location.replace(url);
+    if (response.status === "ok") {
+      setSuccess(true);
     }
   };
 
@@ -149,6 +146,13 @@ function UpdatePasswordForm() {
           <p className="text-red-600 text-xs mt-1">{errors.confirm.message}</p>
         )}
       </div>
+
+      {success && (
+        <Message
+          type="success"
+          message="Contraseña actualizada correctamente"
+        />
+      )}
 
       <button
         type="submit"

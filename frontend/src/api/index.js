@@ -48,6 +48,10 @@ const API = {
   post(endpoint, body) {
     return this.fetch(endpoint, "POST", body);
   },
+
+  patch(endpoint, body) {
+    return this.fetch(endpoint, "PATCH", body);
+  },
 };
 
 export default API;

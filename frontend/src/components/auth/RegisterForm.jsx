@@ -45,7 +45,6 @@ function RegisterForm() {
     }
 
     if (response.status === "ok") {
-      console.log(response);
       setSuccess(true);
     }
   };

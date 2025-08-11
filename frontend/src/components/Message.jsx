@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CircleCheck } from "lucide-react";
 
 const bgColors = {
   error: "bg-red-100 text-red-800 border-red-300",
@@ -10,7 +10,11 @@ const bgColors = {
 export function Message({
   message = "Ocurrió un error inesperado.",
   type = "error",
-  icon = <AlertCircle className="w-6 h-6 mr-2" />,
+  icon = type === "success" ? (
+    <CircleCheck className="w-6 h-6 mr-2" />
+  ) : (
+    <AlertCircle className="w-6 h-6 mr-2" />
+  ),
   children,
 }) {
   return (

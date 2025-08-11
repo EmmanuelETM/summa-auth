@@ -19,7 +19,7 @@ const bearer = () => async (req, res, next) => {
   // Si no tiene el bearer...
 
   const key = await keysModel.getOne({ key: token });
-  //   console.log(key);
+
   if (!key) {
     return res.status(401).json({
       status: "error",

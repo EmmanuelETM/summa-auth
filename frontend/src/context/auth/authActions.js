@@ -10,4 +10,12 @@ export async function register({ username, email, password }) {
   return [null, data];
 }
 
-// export async function UpdatePassword({ username, email, newPassword }) {}
+export async function updatePassword({ username, password }) {
+  const [error, data] = await authAPI.updatePassword({ username, password });
+
+  if (error) {
+    return [error || "Couldn't update password", null];
+  }
+
+  return [null, data];
+}
