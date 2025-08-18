@@ -15,7 +15,8 @@ content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJhcHAiOiJhdXRoIn0.Mnmp9WQptM2xP4yDOESK1bykmJfNWz4far501MAsFS4
 
 {
-    "username": "ambar",
+    "username": "admin",
+    "app": "auth",
     "password": "123456"
 }
 

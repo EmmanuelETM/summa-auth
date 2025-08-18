@@ -22,8 +22,11 @@ export class UserModel {
 
   // Todos los usuarios
   static async getAll() {
-    const results = await db.pool.query(`SELECT * FROM users`);
+    const results = await db.pool.query(
+      `SELECT id, username, email, enabled FROM users`
+    );
     const users = results;
+    console.log(users);
     return users || null;
   }
 

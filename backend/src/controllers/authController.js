@@ -18,10 +18,8 @@ export class AuthController {
     const { username, password, email } = req.body;
 
     try {
-      // Buscar el usuario
       const user = await this.userModel.getOne({ username, email });
 
-      // Confirmar que no exista
       if (user) {
         return res.status(409).json({
           status: "error",
@@ -29,13 +27,10 @@ export class AuthController {
         });
       }
 
-      // Generar ID
       const id = uuidv4();
-
-      // Preparar la clave hasheada
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Guardar el usuario
+      // create the user
       await this.userModel.create({
         id,
         username,
@@ -43,13 +38,11 @@ export class AuthController {
         email,
       });
 
-      // Enviar la respuesta
       return res.status(201).json({
         status: "ok",
         message: "User registered successfully",
       });
     } catch (error) {
-      //En caso de error
       return res.status(500).json({
         status: "error",
         message: "Internal Server Error",
@@ -62,10 +55,8 @@ export class AuthController {
     const { username, password, app } = req.body;
 
     try {
-      // Buscar el usuario
       const user = await this.userModel.getOne({ username });
 
-      // Saber si existe el usuario
       if (!user) {
         return res.status(400).json({
           status: "error",
@@ -73,15 +64,13 @@ export class AuthController {
         });
       }
 
-      // Si esta deshabilitado
       if (!user.enabled) {
-        return res.status(400).json({
+        return res.status(403).json({
           status: "error",
           message: "User account is disabled",
         });
       }
 
-      // validar la contraseña
       const pass = await bcrypt.compare(password, user.password);
       if (!pass) {
         return res.status(400).json({
@@ -90,20 +79,17 @@ export class AuthController {
         });
       }
 
-      // Firmar un nuevo token
       const token = jwt.sign(
         { username: user.username, app },
         config.SECRET_KEY
       );
 
-      // Enviar la respuesta
       return res.status(200).json({
         status: "ok",
         username: user.username.toLowerCase(),
         token,
       });
     } catch (error) {
-      //En caso de error
       return res.status(500).json({
         status: "error",
         message: "Internal Server Error",
@@ -114,16 +100,10 @@ export class AuthController {
 
   authenticate = async (req, res) => {
     try {
-      // Vefificar si el token es valido
       const token = jwt.verify(req.body.token, config.SECRET_KEY);
 
-      // Extraer el username del token
-      const username = token.username;
+      const user = await this.userModel.getOne({ username: token.username });
 
-      // Buscar el usuario
-      const user = await this.userModel.getOne({ username });
-
-      // Validar si esta activo
       if (!user.enabled) {
         return res.status(403).json({
           status: "error",
@@ -131,13 +111,11 @@ export class AuthController {
         });
       }
 
-      // Enviar la respuesta
       return res.status(200).json({
         status: "ok",
         message: "Token authenticated",
       });
     } catch (error) {
-      //En caso de error
       return res.status(401).json({
         status: "error",
         message: "Invalid token",
@@ -148,17 +126,14 @@ export class AuthController {
 
   verify = async (req, res) => {
     try {
-      // Vefificar si el token es valido
       const token = jwt.verify(req.body.token, config.SECRET_KEY);
 
-      // Enviar la respuesta
       return res.status(200).json({
         status: "ok",
         message: "Valid token",
         token,
       });
     } catch (error) {
-      //En caso de error
       return res.status(401).json({
         status: "error",
         message: "Invalid token",

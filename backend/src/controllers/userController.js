@@ -9,10 +9,9 @@ export class UserController {
   }
 
   getAll = async (_, res) => {
-    console.log("we in the controller getall");
     try {
       const result = await this.userModel.getAll();
-      return result;
+      res.status(200).json(result);
     } catch (error) {
       return res.status(500).json({
         status: "error",
@@ -79,7 +78,7 @@ export class UserController {
     });
   };
 
-  // Recrear el id y el password. --Eliminar despues de importados
+  // Recrear el id y el password.
   import = async (_, res) => {
     const users = await this.userModel.getAll();
     const usersForImport = users.filter((user) => user.id == "");
