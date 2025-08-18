@@ -74,7 +74,7 @@ function SidebarLink({ to, Icon, text }) {
         className={({ isActive }) =>
           `flex gap-2 items-center px-3 py-2 rounded-md transition-colors duration-200 ${
             isActive
-              ? "bg-blue-600 text-white font-medium"
+              ? "bg-sky-700 text-white font-medium"
               : "text-black hover:bg-zinc-200"
           }`
         }

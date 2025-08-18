@@ -6,7 +6,7 @@ export function Pagination({ currentPage, totalPages, goToPage }) {
       <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
-        className="p-1 bg-gray-300 rounded disabled:opacity-50 cursor-pointer disabled:cursor-default"
+        className="p-1 bg-zinc-400 rounded disabled:opacity-30 cursor-pointer disabled:cursor-default"
       >
         <ChevronLeft />
       </button>
@@ -23,8 +23,8 @@ export function Pagination({ currentPage, totalPages, goToPage }) {
             onClick={() => goToPage(page)}
             className={`px-3 py-1 rounded ${
               page === currentPage
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 cursor-pointer"
+                ? "bg-sky-700 text-white"
+                : "bg-zinc-200 cursor-pointer"
             }`}
           >
             {page}
@@ -33,7 +33,7 @@ export function Pagination({ currentPage, totalPages, goToPage }) {
       <button
         onClick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="p-1 bg-gray-300 rounded cursor-pointer disabled:cursor-default disabled:opacity-50"
+        className="p-1 bg-zinc-400 rounded cursor-pointer disabled:cursor-default disabled:opacity-30"
       >
         <ChevronRight />
       </button>

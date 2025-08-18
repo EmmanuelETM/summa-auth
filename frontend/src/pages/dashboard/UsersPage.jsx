@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table } from "../../components/Table/Table";
 import RowActions from "../../components/Table/RowActions";
+import user from "../../api/user";
+import { Badge } from "../../components/badge";
+import { CircleCheck, CircleX } from "lucide-react";
 
 export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(allData.length / pageSize);
+  const [data, setData] = useState([]);
+  const totalPages = Math.ceil(data.length / pageSize);
 
-  const currentPageData = allData.slice(
+  const currentPageData = data.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await user.getAll();
+      setData(response);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="p-6 mx-auto">
@@ -33,35 +45,22 @@ export default function UsersPage() {
 
 const pageSize = 10;
 
-const allData = [
-  { name: "Alice", email: "alice@example.com", status: "Active", type: "user" },
-  { name: "Bob", email: "bob@example.com", status: "Inactive", type: "admin" },
-  {
-    name: "Charlie",
-    email: "charlie@example.com",
-    status: "Active",
-    type: "admin",
-  },
-  { name: "Eva", email: "eva@example.com", status: "Active", type: "user" },
-];
-
 const columns = [
-  { header: "Name", accessor: "name" },
+  { header: "Name", accessor: "username" },
   { header: "Email", accessor: "email" },
   {
-    header: "Status",
-    accessor: "status",
-    cell: (row) => (
-      <span
-        className={`px-2 py-1 text-xs rounded-full ${
-          row.status === "Active"
-            ? "bg-green-100 text-green-800"
-            : "bg-red-100 text-red-800"
-        }`}
-      >
-        {row.status}
-      </span>
-    ),
+    header: "Enabled",
+    accessor: "enabled",
+    cell: (row) => {
+      const isEnabled = row.enabled === 1;
+      return (
+        <Badge
+          text={isEnabled ? "Active" : "Inactive"}
+          color={isEnabled ? "green" : "red"}
+          Icon={isEnabled ? CircleCheck : CircleX}
+        />
+      );
+    },
   },
   {
     header: "Actions",

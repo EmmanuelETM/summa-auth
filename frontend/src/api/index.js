@@ -1,10 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL;
-const API_KEY = import.meta.env.VITE_API_KEY;
+import config from "../config.js";
 
 const API = {
   config: {
-    url: API_URL,
-    key: API_KEY,
+    url: config.API_URL,
+    key: config.API_KEY,
     app: "",
   },
 

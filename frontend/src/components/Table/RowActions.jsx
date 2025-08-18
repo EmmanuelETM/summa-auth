@@ -1,29 +1,37 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
-import ConfirmModal from "../Modals/ConfirmModal";
 
 const RowActions = ({ row }) => {
   const [showMenu, setShowMenu] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef(null);
 
-  const handleDelete = () => {
-    setShowConfirm(true);
+  const handleOpenMenu = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const menuWidth = 160; // same as w-40 (40 * 4px = 160px)
+      setPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.right + window.scrollX - menuWidth, // shift left instead of right
+      });
+    }
+    setShowMenu((prev) => !prev);
   };
 
-  const confirmDelete = () => {
-    setShowConfirm(false);
-    console.log(`Deleted ${row.name}`);
+  const handleDisable = (enabled) => {
+    console.log(enabled === 1);
   };
 
   const actions = [
     {
-      label: "Edit",
-      onClick: () => console.log("Edit", row),
+      label: "Copy ID",
+      onClick: () => navigator.clipboard.writeText(row.id),
       show: true,
     },
+    { label: "Edit", onClick: () => console.log("Edit", row), show: true },
     {
-      label: "Delete",
-      onClick: handleDelete,
+      label: row.enabled === 1 ? "Disable" : "Enable",
+      onClick: () => handleDisable(row.enabled),
       show: row.status !== "Inactive",
     },
     {
@@ -33,10 +41,22 @@ const RowActions = ({ row }) => {
     },
   ];
 
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (buttonRef.current && !buttonRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative inline-block">
+    <>
       <button
-        onClick={() => setShowMenu((prev) => !prev)}
+        ref={buttonRef}
+        onClick={handleOpenMenu}
         className="p-1 hover:bg-gray-200 rounded cursor-pointer"
       >
         <MoreVertical size={18} />
@@ -44,8 +64,8 @@ const RowActions = ({ row }) => {
 
       {showMenu && (
         <div
-          className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-10"
-          onMouseLeave={() => setShowMenu(false)}
+          className="fixed z-50 w-40 bg-white border border-gray-200 rounded shadow-lg"
+          style={{ top: position.top, left: position.left }}
         >
           {actions
             .filter((a) => a.show)
@@ -63,16 +83,7 @@ const RowActions = ({ row }) => {
             ))}
         </div>
       )}
-
-      {showConfirm && (
-        <ConfirmModal
-          title={`Delete ${row.name}?`}
-          message="Are you sure you want to delete this item? This action cannot be undone."
-          onConfirm={confirmDelete}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
-    </div>
+    </>
   );
 };
 
