@@ -1,6 +1,6 @@
 import db from "../db/mysql.js";
 
-export class UsersModel {
+export class UserModel {
   // Crea un nuevo usuario
   static async create({ id, username, password, email }) {
     await db.pool.query(

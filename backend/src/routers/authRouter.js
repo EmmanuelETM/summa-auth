@@ -1,32 +1,32 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/auth.js";
+import { AuthController } from "../controllers/authController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { authSchema } from "./schemas/authSchema.js";
 
-export const createAuthRouter = ({ UsersModel }) => {
+export const createAuthRouter = ({ UserModel }) => {
   const router = Router();
-  const authController = new AuthController({ UsersModel });
+  const authController = new AuthController({ UserModel });
 
   router.get("/portal", authController.portal);
 
   router.post(
     "/register",
-    validateRequest(authSchema.register),
+    validateRequest({ schema: authSchema.register }),
     authController.register
   );
   router.post(
     "/login",
-    validateRequest(authSchema.login),
+    validateRequest({ schema: authSchema.login }),
     authController.login
   );
   router.post(
     "/authenticate",
-    validateRequest(authSchema.authenticate),
+    validateRequest({ schema: authSchema.authenticate }),
     authController.authenticate
   );
   router.post(
     "/verify",
-    validateRequest(authSchema.verify),
+    validateRequest({ schema: authSchema.verify }),
     authController.verify
   );
 

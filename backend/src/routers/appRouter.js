@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AppController } from "../controllers/app.js";
+import { AppController } from "../controllers/appController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { appSchema } from "./schemas/appSchema.js";
 
@@ -7,7 +7,11 @@ export const createAppRouter = ({ AppModel }) => {
   const router = Router();
   const appController = new AppController({ AppModel });
 
-  router.post("/", validateRequest(appSchema.register), appController.create);
+  router.post(
+    "/",
+    validateRequest({ schema: appSchema.register }),
+    appController.create
+  );
   router.get("/:id", appController.getOne);
 
   return router;

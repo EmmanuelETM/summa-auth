@@ -3,13 +3,16 @@ import jwt from "jsonwebtoken";
 import config from "../../config.js";
 import { v4 as uuidv4 } from "uuid";
 
-export class UsersController {
-  constructor({ UsersModel }) {
-    this.usersModel = UsersModel;
+export class UserController {
+  constructor({ UserModel }) {
+    this.userModel = UserModel;
   }
 
   getAll = async (_, res) => {
+    console.log("we in the controller getall");
     try {
+      const result = await this.userModel.getAll();
+      return result;
     } catch (error) {
       return res.status(500).json({
         status: "error",
@@ -28,7 +31,7 @@ export class UsersController {
         updateduser = { ...updateduser, username };
       }
 
-      await this.usersModel.update({
+      await this.userModel.update({
         username: currentusername,
         data: updateduser,
       });
@@ -53,7 +56,7 @@ export class UsersController {
   updatePassword = async (req, res) => {
     const currentusername = req.params.username;
 
-    const exists = await this.usersModel.getOne({
+    const exists = await this.userModel.getOne({
       username: currentusername,
       email: "",
     });
@@ -65,7 +68,7 @@ export class UsersController {
     const { password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await this.usersModel.update({
+    await this.userModel.update({
       username: currentusername,
       data: { password: hashedPassword },
     });
@@ -78,13 +81,13 @@ export class UsersController {
 
   // Recrear el id y el password. --Eliminar despues de importados
   import = async (_, res) => {
-    const users = await this.usersModel.getAll();
+    const users = await this.userModel.getAll();
     const usersForImport = users.filter((user) => user.id == "");
 
     for (const user of usersForImport) {
       const id = uuidv4();
       const password = await bcrypt.hash("1234", 10);
-      await this.usersModel.update({
+      await this.userModel.update({
         username: user.username,
         data: { id, password },
       });

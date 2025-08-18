@@ -4,8 +4,8 @@ import config from "../../config.js";
 import { v4 as uuidv4 } from "uuid";
 
 export class AuthController {
-  constructor({ UsersModel }) {
-    this.usersModel = UsersModel;
+  constructor({ UserModel }) {
+    this.userModel = UserModel;
   }
   portal = (_, res) => {
     return res.status(200).json({
@@ -19,7 +19,7 @@ export class AuthController {
 
     try {
       // Buscar el usuario
-      const user = await this.usersModel.getOne({ username, email });
+      const user = await this.userModel.getOne({ username, email });
 
       // Confirmar que no exista
       if (user) {
@@ -36,7 +36,7 @@ export class AuthController {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Guardar el usuario
-      await this.usersModel.create({
+      await this.userModel.create({
         id,
         username,
         password: hashedPassword,
@@ -63,7 +63,7 @@ export class AuthController {
 
     try {
       // Buscar el usuario
-      const user = await this.usersModel.getOne({ username });
+      const user = await this.userModel.getOne({ username });
 
       // Saber si existe el usuario
       if (!user) {
@@ -121,7 +121,7 @@ export class AuthController {
       const username = token.username;
 
       // Buscar el usuario
-      const user = await this.usersModel.getOne({ username });
+      const user = await this.userModel.getOne({ username });
 
       // Validar si esta activo
       if (!user.enabled) {

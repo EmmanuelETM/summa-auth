@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 
-export const schemaValidator = (schema, data) => {
+export const schemaValidator = ({ schema, data }) => {
   try {
     schema.parse(data);
     return { isValid: true, errors: null };

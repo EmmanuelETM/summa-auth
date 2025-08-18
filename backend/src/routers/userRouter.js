@@ -1,26 +1,26 @@
 import { Router } from "express";
-import { UsersController } from "../controllers/user.js";
+import { UserController } from "../controllers/userController.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { userSchema } from "./schemas/userSchema.js";
 
-export const createUsersRouter = ({ UsersModel }) => {
+export const createUserRouter = ({ UserModel }) => {
   const router = Router();
-  const usersController = new UsersController({ UsersModel });
+  const userController = new UserController({ UserModel });
 
-  router.get("/", usersController.getAll);
+  router.get("/", userController.getAll);
 
   router.patch(
     "/:username",
-    validateRequest(userSchema.update),
-    usersController.update
+    validateRequest({ schema: userSchema.update }),
+    userController.update
   );
   router.patch(
     "/:username/password",
-    validateRequest(userSchema.updatePassword),
-    usersController.updatePassword
+    validateRequest({ schema: userSchema.updatePassword }),
+    userController.updatePassword
   );
 
-  router.post("/import", usersController.import);
+  router.post("/import", userController.import);
 
   return router;
 };
