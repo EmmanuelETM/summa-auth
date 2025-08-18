@@ -1,6 +1,6 @@
 // validateToken.js
 import config from "../../config.js";
-import keysModel from "../models/keysModel.js";
+import { KeysModel } from "../models/keysModel.js";
 
 const bearer = () => async (req, res, next) => {
   const bearer = req.headers.authorization;
@@ -18,7 +18,7 @@ const bearer = () => async (req, res, next) => {
 
   // Si no tiene el bearer...
 
-  const key = await keysModel.getOne({ key: token });
+  const key = await KeysModel.getOne({ key: token });
 
   if (!key) {
     return res.status(401).json({

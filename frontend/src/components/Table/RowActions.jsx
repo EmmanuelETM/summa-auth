@@ -13,7 +13,6 @@ const RowActions = ({ row }) => {
   const confirmDelete = () => {
     setShowConfirm(false);
     console.log(`Deleted ${row.name}`);
-    // Call delete API here
   };
 
   const actions = [
@@ -35,10 +34,10 @@ const RowActions = ({ row }) => {
   ];
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block">
       <button
         onClick={() => setShowMenu((prev) => !prev)}
-        className="p-1 hover:bg-gray-200 rounded"
+        className="p-1 hover:bg-gray-200 rounded cursor-pointer"
       >
         <MoreVertical size={18} />
       </button>

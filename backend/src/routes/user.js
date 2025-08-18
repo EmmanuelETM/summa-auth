@@ -1,13 +1,20 @@
-import express from 'express';
-import auth from '../controllers/auth.js';
-import validate from '../middlewares/validateRequest.js';
-import request from './schemas/user.js';
+import { Router } from "express";
+import { UsersController } from "../controllers/user.js";
+import validate from "../middlewares/validateRequest.js";
+import request from "./schemas/user.js";
 
-const router = express.Router();
+const router = Router();
+const usersController = new UsersController();
 
-router.patch('/:username', validate(request.update), auth.update);
-router.patch('/:username/password', validate(request.updatePassword), auth.updatePassword); 
+router.get("/", usersController.getAll);
 
-router.post('/import', auth.import);
+router.patch("/:username", validate(request.update), usersController.update);
+router.patch(
+  "/:username/password",
+  validate(request.updatePassword),
+  usersController.updatePassword
+);
+
+router.post("/import", usersController.import);
 
 export default router;

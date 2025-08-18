@@ -1,15 +1,20 @@
-import express from 'express';
-import auth from '../controllers/auth.js';
-import validate from '../middlewares/validateRequest.js';
-import request from './schemas/auth.js';
+import { Router } from "express";
+import { AuthController } from "../controllers/auth.js";
+import validate from "../middlewares/validateRequest.js";
+import request from "./schemas/auth.js";
 
-const router = express.Router();
+const router = Router();
+const authController = new AuthController();
 
-router.get('/portal', auth.portal)
+router.get("/portal", authController.portal);
 
-router.post('/register', validate(request.register), auth.register);
-router.post('/login',  validate(request.login), auth.login);
-router.post('/authenticate', validate(request.authenticate), auth.authenticate);
-router.post('/verify', validate(request.verify), auth.verify);
+router.post("/register", validate(request.register), authController.register);
+router.post("/login", validate(request.login), authController.login);
+router.post(
+  "/authenticate",
+  validate(request.authenticate),
+  authController.authenticate
+);
+router.post("/verify", validate(request.verify), authController.verify);
 
 export default router;

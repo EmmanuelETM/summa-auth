@@ -1,4 +1,3 @@
-// components/Table/Pagination.js
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function Pagination({ currentPage, totalPages, goToPage }) {
@@ -24,7 +23,7 @@ export function Pagination({ currentPage, totalPages, goToPage }) {
             onClick={() => goToPage(page)}
             className={`px-3 py-1 rounded ${
               page === currentPage
-                ? "bg-green-600 text-white"
+                ? "bg-blue-600 text-white"
                 : "bg-gray-200 cursor-pointer"
             }`}
           >

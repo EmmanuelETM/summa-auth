@@ -1,11 +1,12 @@
-import express from 'express';
-import app from '../controllers/app.js'
-import validate from '../middlewares/validateRequest.js';
-import request from './schemas/app.js';
+import { Router } from "express";
+import { AppController } from "../controllers/app.js";
+import validate from "../middlewares/validateRequest.js";
+import request from "./schemas/app.js";
 
-const router = express.Router();
+const router = Router();
+const appController = new AppController();
 
-router.post('/',  validate(request.register), app.create);
-router.get('/:id',  app.getOne );
+router.post("/", validate(request.register), appController.create);
+router.get("/:id", appController.getOne);
 
-export default router; 
+export default router;

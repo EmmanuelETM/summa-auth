@@ -2,6 +2,37 @@ import { useState } from "react";
 import { Table } from "../../components/Table/Table";
 import RowActions from "../../components/Table/RowActions";
 
+export default function UsersPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(allData.length / pageSize);
+
+  const currentPageData = allData.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  return (
+    <div className="p-6 mx-auto">
+      <Table
+        columns={columns}
+        data={currentPageData}
+        isLoading={false}
+        pagination={{
+          currentPage,
+          totalPages,
+          goToPage: (page) => {
+            if (page >= 1 && page <= totalPages) {
+              setCurrentPage(page);
+            }
+          },
+        }}
+      />
+    </div>
+  );
+}
+
+const pageSize = 10;
+
 const allData = [
   { name: "Alice", email: "alice@example.com", status: "Active", type: "user" },
   { name: "Bob", email: "bob@example.com", status: "Inactive", type: "admin" },
@@ -38,34 +69,3 @@ const columns = [
     cell: (row) => <RowActions row={row} />,
   },
 ];
-
-const pageSize = 3;
-
-export default function UsersPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(allData.length / pageSize);
-
-  const currentPageData = allData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <Table
-        columns={columns}
-        data={currentPageData}
-        isLoading={false}
-        pagination={{
-          currentPage,
-          totalPages,
-          goToPage: (page) => {
-            if (page >= 1 && page <= totalPages) {
-              setCurrentPage(page);
-            }
-          },
-        }}
-      />
-    </div>
-  );
-}
