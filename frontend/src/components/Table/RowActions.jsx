@@ -9,10 +9,10 @@ const RowActions = ({ row }) => {
   const handleOpenMenu = () => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const menuWidth = 160; // same as w-40 (40 * 4px = 160px)
+      const menuWidth = 160;
       setPosition({
         top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX - menuWidth, // shift left instead of right
+        left: rect.right + window.scrollX - menuWidth,
       });
     }
     setShowMenu((prev) => !prev);
@@ -32,16 +32,10 @@ const RowActions = ({ row }) => {
     {
       label: row.enabled === 1 ? "Disable" : "Enable",
       onClick: () => handleDisable(row.enabled),
-      show: row.status !== "Inactive",
-    },
-    {
-      label: "Admin Panel",
-      onClick: () => console.log("Admin Panel for", row.name),
-      show: row.type === "admin",
+      show: true,
     },
   ];
 
-  // Close on click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (buttonRef.current && !buttonRef.current.contains(e.target)) {

@@ -1,6 +1,7 @@
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 import { Pagination } from "./Pagination";
+import { Loading } from "../Loading";
 
 export function Table({
   columns,
@@ -11,7 +12,7 @@ export function Table({
 }) {
   return (
     <div className="w-full">
-      <div className="overflow-x-auto rounded-xl border border-zinc-200">
+      <div className="relative overflow-x-auto border border-zinc-200 rounded-xl">
         <table className="w-full min-w-[600px] text-left border-spacing-0">
           <thead>
             <tr>
@@ -23,11 +24,8 @@ export function Table({
           <tbody>
             {isLoading ? (
               <tr>
-                <td
-                  colSpan={columns.length}
-                  className="py-4 text-center text-gray-500"
-                >
-                  Loading...
+                <td colSpan={999} className="text-center py-4">
+                  <Loading />
                 </td>
               </tr>
             ) : data.length === 0 ? (
@@ -48,7 +46,6 @@ export function Table({
         </table>
       </div>
 
-      {/* Pagination below */}
       {pagination && (
         <Pagination
           currentPage={pagination.currentPage}

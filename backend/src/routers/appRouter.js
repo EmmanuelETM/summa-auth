@@ -12,6 +12,8 @@ export const createAppRouter = ({ AppModel }) => {
     validateRequest({ schema: appSchema.register }),
     appController.create
   );
+
+  router.get("/", appController.getAll);
   router.get("/:id", appController.getOne);
 
   return router;

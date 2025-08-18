@@ -42,6 +42,19 @@ export class AppController {
     }
   };
 
+  getAll = async (req, res) => {
+    try {
+      const apps = await this.appModel.getAll();
+      res.status(200).json(apps);
+    } catch (err) {
+      res.status(500).json({
+        status: "error",
+        message: "Internal Server Error",
+        ...(config.MODE === "development" && { error }),
+      });
+    }
+  };
+
   getOne = async (req, res) => {
     const { id } = req.params;
     const app = await this.appModel.getOne({ id });

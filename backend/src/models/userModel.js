@@ -26,7 +26,6 @@ export class UserModel {
       `SELECT id, username, email, enabled FROM users`
     );
     const users = results;
-    console.log(users);
     return users || null;
   }
 

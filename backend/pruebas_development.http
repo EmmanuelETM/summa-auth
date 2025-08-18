@@ -70,9 +70,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZ
 }
 
 ### endpoint in app
-GET http://localhost:4000/api/apps/csc HTTP/1.1
+GET http://localhost:4000/api/apps/fe HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJzdWIiOiJzb3BvcnRlIiwiYXBwIjoiYXBpIn0._8PaVQPzqIxm6XHGmgE7lIThpCYHpzq2Bw4dkfr-4yY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJhcHAiOiJhdXRoIn0.Mnmp9WQptM2xP4yDOESK1bykmJfNWz4far501MAsFS4
+
+### endpont in app
+GET http://localhost:4000/api/apps/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdW1tYXNvZnQiLCJhcHAiOiJhdXRoIn0.Mnmp9WQptM2xP4yDOESK1bykmJfNWz4far501MAsFS4
 
 ### endpoint in app
 POST http://localhost:4000/api/apps HTTP/1.1

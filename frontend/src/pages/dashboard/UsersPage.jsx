@@ -8,6 +8,7 @@ import { CircleCheck, CircleX } from "lucide-react";
 export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const totalPages = Math.ceil(data.length / pageSize);
 
   const currentPageData = data.slice(
@@ -17,8 +18,10 @@ export default function UsersPage() {
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       const response = await user.getAll();
       setData(response);
+      setLoading(false);
     }
     fetchData();
   }, []);
@@ -28,7 +31,7 @@ export default function UsersPage() {
       <Table
         columns={columns}
         data={currentPageData}
-        isLoading={false}
+        isLoading={loading}
         pagination={{
           currentPage,
           totalPages,

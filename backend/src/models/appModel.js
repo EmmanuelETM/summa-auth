@@ -9,6 +9,14 @@ export class AppModel {
     return await app.getOne(id);
   }
 
+  static async getAll() {
+    const result = await db.pool.query(`
+      SELECT * FROM apps;
+      `);
+
+    return result;
+  }
+
   static async getOne({ id }) {
     const [result] = await db.pool.query(
       `SELECT * FROM apps WHERE id = ? OR alias = ?`,
