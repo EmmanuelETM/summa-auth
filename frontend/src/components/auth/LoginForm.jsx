@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router";
-import useEnterNavigation from "../../hooks/use-enter-navigation.jsx";
 import { useApp } from "../../hooks/use-app.jsx";
 import { useAuth } from "../../hooks/use-auth.jsx";
 import { Errores, ErrorMapper } from "../../lib/errores.js";
@@ -20,8 +19,6 @@ function LoginForm() {
     formState: { errors },
     reset,
   } = useForm();
-
-  useEnterNavigation("#Form");
 
   const onSubmit = async (data) => {
     setSubmitting(true);

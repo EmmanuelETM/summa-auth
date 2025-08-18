@@ -3,78 +3,64 @@ import { useLocation, useNavigate } from "react-router";
 import { AuthContext } from "./AuthContext";
 import authApi from "../../api/auth.js";
 
+const initialAuth = {
+  authenticated: false,
+  token: "",
+  username: null,
+};
+
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({
-    authenticated: false,
-    token: "",
-    username: null,
-  });
+  const [auth, setAuth] = useState(initialAuth);
+  const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(false);
   const { search } = useLocation();
   const navigate = useNavigate();
-  const isAuthApp = search !== "" ? false : true;
+
+  const isAuthApp = search === "";
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
-    setAuth({ authenticated: false, token: "", username: null });
+    setAuth(initialAuth);
     navigate("/");
   }, [navigate]);
 
   const verify = useCallback(async () => {
     setLoading(true);
+
     const token = localStorage.getItem("token");
+    let success = false;
 
-    if (!token) {
-      setLoading(false);
-      return false;
+    if (token) {
+      const [error, data] = await authApi.verify(token);
+
+      if (!error && data?.token?.username === "admin") {
+        setAuth({
+          authenticated: true,
+          token,
+          username: data.token.username,
+        });
+        success = true;
+      } else {
+        logout();
+      }
     }
-
-    const [error, data] = await authApi.verify(token);
-
-    if (error || !data) {
-      logout();
-      setLoading(false);
-      return false;
-    }
-
-    const isAdmin = data.token.username === "admin";
-
-    if (!isAdmin) {
-      logout();
-      setLoading(false);
-      return false;
-    }
-
-    setAuth((prev) => ({
-      ...prev,
-      authenticated: true,
-      token,
-      username: data.token.username,
-    }));
 
     setLoading(false);
-    return true;
+    setVerified(true);
+    return success;
   }, [logout]);
 
   const handleAuth = useCallback(
     ({ token = "", username } = {}) => {
-      const tokenFromStorage = localStorage.getItem("token");
-
-      const validToken =
-        token && token.length > 1
-          ? token
-          : tokenFromStorage && tokenFromStorage.length > 1
-          ? tokenFromStorage
-          : null;
+      const validToken = token && token.length > 1 ? token : null;
 
       if (validToken) {
         localStorage.setItem("token", validToken);
-        setAuth((prev) => ({
-          ...prev,
+        setAuth({
           authenticated: true,
           token: validToken,
           username,
-        }));
+        });
       } else {
         logout();
       }
@@ -96,6 +82,7 @@ export const AuthProvider = ({ children }) => {
     if (isAuthApp) {
       handleAuth({ token: data.token, username });
     }
+
     return [null, data];
   };
 
@@ -103,7 +90,13 @@ export const AuthProvider = ({ children }) => {
     verify();
   }, [verify]);
 
-  const value = { auth, login, logout, loading };
+  const value = {
+    auth,
+    login,
+    logout,
+    loading,
+    verified,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
