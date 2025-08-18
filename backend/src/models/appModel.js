@@ -1,4 +1,4 @@
-import db from "../databases/mysql.js";
+import db from "../db/mysql.js";
 
 export class AppModel {
   static async create({ id, name, alias, url, icon }) {

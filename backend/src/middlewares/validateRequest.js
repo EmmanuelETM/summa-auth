@@ -1,8 +1,8 @@
 import config from "../../config.js";
-import validator from "../helpers/schemaValidator.js";
+import { schemaValidator } from "../helpers/schemaValidator.js";
 
-const validate = (schema, auth) => (req, res, next) => {
-  const validation = validator.schema(schema, req.body);
+export const validateRequest = (schema, auth) => (req, res, next) => {
+  const validation = schemaValidator(schema, req.body);
 
   if (!validation.isValid) {
     return res.status(400).json({
@@ -14,5 +14,3 @@ const validate = (schema, auth) => (req, res, next) => {
 
   next();
 };
-
-export default validate;

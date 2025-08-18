@@ -2,12 +2,16 @@ import { AppModel } from "../models/appModel.js";
 import { v4 as uuidv4 } from "uuid";
 
 export class AppController {
+  constructor({ AppModel }) {
+    this.appModel = AppModel;
+  }
+
   create = async (req, res) => {
     const { name, alias, url, icon } = req.body;
 
     try {
       // Buscar el app
-      const app = await AppModel.getOne({ id: alias });
+      const app = await this.appModel.getOne({ id: alias });
 
       // Confirmar que no exista
       if (app) {
@@ -21,7 +25,7 @@ export class AppController {
       const id = uuidv4();
 
       // Guardar el app
-      await AppModel.create({ id, name, alias, url, icon });
+      await this.appModel.create({ id, name, alias, url, icon });
 
       // Enviar la respuesta
       return res.status(201).json({
@@ -40,7 +44,7 @@ export class AppController {
 
   getOne = async (req, res) => {
     const { id } = req.params;
-    const app = await AppModel.getOne({ id });
+    const app = await this.appModel.getOne({ id });
 
     if (!app) {
       return res.status(404).json({

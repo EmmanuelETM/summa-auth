@@ -1,10 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../../config.js";
-import { UsersModel } from "../models/userModel.js";
 import { v4 as uuidv4 } from "uuid";
 
 export class UsersController {
+  constructor({ UsersModel }) {
+    this.usersModel = UsersModel;
+  }
+
   getAll = async (_, res) => {
     try {
     } catch (error) {
@@ -25,7 +28,7 @@ export class UsersController {
         updateduser = { ...updateduser, username };
       }
 
-      await UsersModel.update({
+      await this.usersModel.update({
         username: currentusername,
         data: updateduser,
       });
@@ -50,7 +53,7 @@ export class UsersController {
   updatePassword = async (req, res) => {
     const currentusername = req.params.username;
 
-    const exists = await UsersModel.getOne({
+    const exists = await this.usersModel.getOne({
       username: currentusername,
       email: "",
     });
@@ -62,7 +65,7 @@ export class UsersController {
     const { password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await UsersModel.update({
+    await this.usersModel.update({
       username: currentusername,
       data: { password: hashedPassword },
     });
@@ -75,13 +78,13 @@ export class UsersController {
 
   // Recrear el id y el password. --Eliminar despues de importados
   import = async (_, res) => {
-    const users = await UsersModel.getAll();
+    const users = await this.usersModel.getAll();
     const usersForImport = users.filter((user) => user.id == "");
 
     for (const user of usersForImport) {
       const id = uuidv4();
       const password = await bcrypt.hash("1234", 10);
-      await UsersModel.update({
+      await this.usersModel.update({
         username: user.username,
         data: { id, password },
       });

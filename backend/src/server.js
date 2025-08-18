@@ -1,37 +1,31 @@
 import express from "express";
 import config from "../config.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
-import authenticated from "./middlewares/validateToken.js";
+import { validateToken } from "./middlewares/validateToken.js";
 import morgan from "morgan";
 
-// routes
-import auth from "./routes/auth.js";
-import apps from "./routes/app.js";
-import users from "./routes/user.js";
+import { createAppRouter } from "./routers/appRouter.js";
+import { createAuthRouter } from "./routers/authRouter.js";
+import { createUsersRouter } from "./routers/userRouter.js";
 
-const server = {};
+export const createServer = ({ AppModel, UsersModel, KeysModel }) => {
+  const server = express();
+  const appRouter = createAppRouter({ AppModel });
+  const usersRouter = createUsersRouter({ UsersModel });
+  const authRouter = createAuthRouter({ UsersModel });
 
-server.run = () => {
-  const app = express();
-  app.disable("x-powered-by");
-  app.use(express.json());
-  app.use(morgan("dev"));
+  server.disable("x-powered-by");
+  server.use(express.json());
+  server.use(morgan("dev"));
 
-  app.use(corsMiddleware());
+  server.use(corsMiddleware());
 
-  app.use((req, res, next) => {
-    console.log(req.url);
-    next();
-  });
+  server.use(validateToken({ KeysModel }));
+  server.use("/api/auth", authRouter);
+  server.use("/api/apps", appRouter);
+  server.use("/api/users", usersRouter);
 
-  app.use(authenticated());
-  app.use("/api/auth", auth);
-  app.use("/api/apps", apps);
-  app.use("/api/users", users);
-
-  app.listen(config.PORT || 4000, () => {
+  server.listen(config.PORT || 4000, () => {
     console.log(`Example app listening on port ${config.PORT || 4000}`);
   });
 };
-
-export default server;

@@ -1,4 +1,4 @@
-import db from "../databases/mysql.js";
+import db from "../db/mysql.js";
 
 export class UsersModel {
   // Crea un nuevo usuario
