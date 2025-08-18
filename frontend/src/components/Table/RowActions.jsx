@@ -1,28 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { MoreVertical } from "lucide-react";
+import { useDropdownMenu } from "../../hooks/use-dropdown-menu";
 
-const RowActions = ({ row }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+const RowActions = ({
+  row,
+  actions: customActions,
+  menuWidth = 160,
+  buttonClassName,
+}) => {
   const buttonRef = useRef(null);
+  const { showMenu, position, toggleMenu, setShowMenu } = useDropdownMenu(
+    buttonRef,
+    menuWidth
+  );
 
-  const handleOpenMenu = () => {
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const menuWidth = 160;
-      setPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX - menuWidth,
-      });
-    }
-    setShowMenu((prev) => !prev);
-  };
-
-  const handleDisable = (enabled) => {
-    console.log(enabled === 1);
-  };
-
-  const actions = [
+  const defaultActions = [
     {
       label: "Copy ID",
       onClick: () => navigator.clipboard.writeText(row.id),
@@ -31,27 +23,21 @@ const RowActions = ({ row }) => {
     { label: "Edit", onClick: () => console.log("Edit", row), show: true },
     {
       label: row.enabled === 1 ? "Disable" : "Enable",
-      onClick: () => handleDisable(row.enabled),
+      onClick: () => console.log("Toggle Enable", row),
       show: true,
     },
   ];
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (buttonRef.current && !buttonRef.current.contains(e.target)) {
-        setShowMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const actions = customActions || defaultActions;
 
   return (
     <>
       <button
         ref={buttonRef}
-        onClick={handleOpenMenu}
-        className="p-1 hover:bg-gray-200 rounded cursor-pointer"
+        onClick={toggleMenu}
+        className={
+          buttonClassName || "p-1 hover:bg-gray-200 rounded cursor-pointer"
+        }
       >
         <MoreVertical size={18} />
       </button>
