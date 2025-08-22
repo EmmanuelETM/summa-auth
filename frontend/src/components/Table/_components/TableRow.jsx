@@ -1,4 +1,4 @@
-export default function TableRow({ columns, row }) {
+export function TableRow({ columns, row }) {
   return (
     <tr className="hover:bg-gray-100 border-b text-left border-zinc-200 last:border-transparent transition">
       {columns.map((col) => (

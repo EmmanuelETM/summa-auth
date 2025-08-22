@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { MoreVertical } from "lucide-react";
-import { useDropdownMenu } from "../../hooks/use-dropdown-menu";
+import { useDropdownMenu } from "../../../hooks/use-dropdown-menu";
 
-const RowActions = ({
+export const RowActions = ({
   row,
   actions: customActions,
   menuWidth = 160,
@@ -28,7 +28,7 @@ const RowActions = ({
     },
   ];
 
-  const actions = customActions || defaultActions;
+  const actions = customActions ?? defaultActions;
 
   return (
     <>
@@ -66,5 +66,3 @@ const RowActions = ({
     </>
   );
 };
-
-export default RowActions;

@@ -3,7 +3,11 @@ import api from "./index.js";
 const user = {
   getAll: async () => {
     const [error, data] = await api.get("/users");
-    return data;
+
+    if (error) {
+      return [error, null];
+    }
+    return [null, data];
   },
 };
 

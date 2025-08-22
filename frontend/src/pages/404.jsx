@@ -7,7 +7,7 @@ export default function NotFoundPage() {
         <img src="/summasoft.svg" alt="Logo SummaSoft" className="w-48" />
       </div>
       <div className="text-center">
-        <h1 className="text-6xl font-bold text-blue-600 mb-4">404</h1>
+        <h1 className="text-6xl font-bold text-sky-700 mb-4">404</h1>
         <p className="text-xl font-semibold text-zinc-800 mb-2">
           Página no encontrada
         </p>
@@ -16,7 +16,7 @@ export default function NotFoundPage() {
         </p>
         <Link
           to="/"
-          className="inline-block bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          className="inline-block bg-sky-700 text-white px-5 py-2 rounded-md hover:bg-sky-600 transition-colors"
         >
           Volver al inicio
         </Link>

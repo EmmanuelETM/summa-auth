@@ -1,58 +1,54 @@
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
-import { Pagination } from "./Pagination";
-import { Loading } from "../Loading";
+import { useState, useMemo } from "react";
+import { TableHeader } from "./_components/TableHeader";
+import { TableBody } from "./_components/TableBody";
+import { TableControls } from "./_components/TableControls";
+import { Pagination } from "./_components/Pagination";
+import { processData } from "../../lib/processData";
+import { tablePages } from "../../lib/tablePages";
 
-export function Table({
-  columns,
-  data,
-  isLoading,
-  emptyText = "No data available.",
-  pagination,
-}) {
+export function Table({ columns, data, text, isLoading, setOpen, accessors }) {
+  const [filters, setFilters] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const filteredData = useMemo(() => {
+    return processData(data, filters);
+  }, [data, filters]);
+
+  const { totalPages, currentPageData } = tablePages(filteredData, currentPage);
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
-    <div className="w-full">
-      <div className="relative overflow-x-auto border border-zinc-200 rounded-xl">
-        <table className="w-full min-w-[600px] text-left border-spacing-0">
-          <thead>
-            <tr>
-              {columns.map((col) => (
-                <TableHeader key={col.accessor} column={col} />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={999} className="text-center py-4">
-                  <Loading />
-                </td>
-              </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="py-4 text-center text-gray-500"
-                >
-                  {emptyText}
-                </td>
-              </tr>
-            ) : (
-              data.map((row, idx) => (
-                <TableRow key={idx} columns={columns} row={row} />
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {pagination && (
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          goToPage={pagination.goToPage}
+    <>
+      <div className="w-full">
+        <TableControls
+          text={text}
+          filters={filters}
+          setFilters={setFilters}
+          accessors={accessors}
+          onClick={() => setOpen(true)}
         />
-      )}
-    </div>
+        <div className="relative overflow-x-auto border border-zinc-200 rounded-xl">
+          <table className="w-full min-w-[600px] text-left border-spacing-0">
+            <TableHeader columns={columns} />
+            <TableBody
+              data={currentPageData}
+              columns={columns}
+              isLoading={isLoading}
+            />
+          </table>
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          goToPage={goToPage}
+        />
+      </div>
+    </>
   );
 }

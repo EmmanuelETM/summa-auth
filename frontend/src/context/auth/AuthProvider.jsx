@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AuthContext } from "./AuthContext";
 import authApi from "../../api/auth.js";
@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(initialAuth);
   const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { search } = useLocation();
   const navigate = useNavigate();
 
@@ -24,11 +25,15 @@ export const AuthProvider = ({ children }) => {
     navigate("/");
   }, [navigate]);
 
-  const verify = useCallback(async () => {
-    setLoading(true);
+  const logoutRef = useRef(logout);
+  useEffect(() => {
+    logoutRef.current = logout;
+  }, [logout]);
 
+  const runVerify = useCallback(async () => {
+    setLoading(true);
     const token = localStorage.getItem("token");
-    let success = false;
+    let ok = false;
 
     if (token) {
       const [error, data] = await authApi.verify(token);
@@ -39,33 +44,39 @@ export const AuthProvider = ({ children }) => {
           token,
           username: data.token.username,
         });
-        success = true;
+        ok = true;
       } else {
-        logout();
+        localStorage.removeItem("token");
+        setAuth(initialAuth);
       }
     }
 
-    setLoading(false);
     setVerified(true);
-    return success;
-  }, [logout]);
+    setLoading(false);
+    return ok;
+  }, []);
+
+  const didInit = useRef(false);
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+    runVerify();
+  }, [runVerify]);
 
   const handleAuth = useCallback(
-    ({ token = "", username } = {}) => {
+    async ({ token = "" } = {}) => {
       const validToken = token && token.length > 1 ? token : null;
 
-      if (validToken) {
-        localStorage.setItem("token", validToken);
-        setAuth({
-          authenticated: true,
-          token: validToken,
-          username,
-        });
-      } else {
-        logout();
+      if (!validToken) {
+        logoutRef.current();
+        return;
       }
+
+      localStorage.setItem("token", validToken);
+      setLoading(true);
+      await runVerify();
     },
-    [logout]
+    [runVerify]
   );
 
   const login = async ({
@@ -79,16 +90,9 @@ export const AuthProvider = ({ children }) => {
       return [error || "Invalid login", null];
     }
 
-    if (isAuthApp) {
-      handleAuth({ token: data.token, username });
-    }
-
+    await handleAuth({ token: data.token });
     return [null, data];
   };
-
-  useEffect(() => {
-    verify();
-  }, [verify]);
 
   const value = {
     auth,

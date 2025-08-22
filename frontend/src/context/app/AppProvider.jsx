@@ -14,8 +14,13 @@ export const AppProvider = ({ children, app }) => {
 
       setLoading(true);
       try {
-        const data = await App.info(name);
-        setInfo(data || defaultApp);
+        const [error, data] = await App.info(name);
+
+        if (error) {
+          setInfo(defaultApp);
+        }
+
+        setInfo(data);
       } catch (err) {
         console.error("Failed to fetch app info:", err);
         setInfo(defaultApp);
